@@ -86,3 +86,5 @@ java -jar wff-validator.jar 2 watchface/src/main/res/raw/watchface.xml
 ## Credits
 
 The heart and footprint icons are from [Material Symbols](https://github.com/google/material-design-icons) by Google, licensed under Apache 2.0.
+
+The always-on time uses [Roboto](https://github.com/googlefonts/roboto-3-classic) Light, licensed under the SIL Open Font License 1.1. See `FONT-LICENSE-Roboto.txt`.

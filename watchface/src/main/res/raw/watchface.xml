@@ -60,10 +60,10 @@
     </DigitalClock>
 
     <!-- Always-on (ambient) mode shows only this: HH:MM centred, white, thin weight to save power. -->
-    <DigitalClock x="0" y="163" width="450" height="124">
-      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="0" width="450" height="124" alpha="0">
+    <DigitalClock x="0" y="155" width="450" height="140">
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="0" width="450" height="140" alpha="0">
         <Variant mode="AMBIENT" target="alpha" value="255" />
-        <Font family="SYNC_TO_DEVICE" size="108" weight="LIGHT" color="#FFFFFFFF" />
+        <Font family="roboto_light" size="108" color="#FFFFFFFF" />
       </TimeText>
     </DigitalClock>
 
