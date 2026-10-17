@@ -5,6 +5,12 @@ A digital watch face for Pixel Watch 3 (Wear OS 5 or newer).
 It shows time with seconds, date, battery, steps, heart rate, today's distance and the
 currently playing track. It has three tap buttons: torch, media controls and Swim.com.
 
+| Watch in use | Always-on |
+|:---:|:---:|
+| <img src="docs/screenshot-active.png" width="300" alt="PixelFace showing time, date, battery, steps, heart rate, distance, now playing and three shortcut buttons"> | <img src="docs/screenshot-always-on.png" width="300" alt="PixelFace always-on mode showing only the time"> |
+
+Screenshots are from a Pixel Watch 3. The track shown is a test track.
+
 ## Project layout
 
 | Module | What it is |
