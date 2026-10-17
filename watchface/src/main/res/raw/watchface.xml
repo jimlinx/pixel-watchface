@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  PixelFace: digital watch face for Pixel Watch 3, Watch Face Format v2.
+
+  Layout on the 450x450 canvas, top to bottom:
+    seconds ring around the edge (hidden in ambient)
+    date
+    HH:MM + seconds
+    battery | steps | heart rate | distance (distance comes from the companion app)
+    now playing (companion app complication)
+    torch shortcut | media controls | swim shortcut
+-->
+<WatchFace width="450" height="450">
+  <Metadata key="CLOCK_TYPE" value="DIGITAL" />
+  <Metadata key="PREVIEW_TIME" value="10:08:32" />
+
+  <UserConfigurations>
+    <ColorConfiguration id="accent" displayName="colors_label" defaultValue="0">
+      <ColorOption id="0" displayName="color_cyan" colors="#FF4DD0E1 #FF0E3A40" />
+      <ColorOption id="1" displayName="color_lime" colors="#FFC6FF00 #FF34400A" />
+      <ColorOption id="2" displayName="color_orange" colors="#FFFFAB40 #FF4A3010" />
+      <ColorOption id="3" displayName="color_pink" colors="#FFFF80AB #FF4A1A2A" />
+    </ColorConfiguration>
+  </UserConfigurations>
+
+  <Scene backgroundColor="#FF000000">
+
+    <!-- Seconds ring. Ticks once per second, hidden in ambient. -->
+    <PartDraw x="0" y="0" width="450" height="450">
+      <Arc centerX="225" centerY="225" width="436" height="436" startAngle="0" endAngle="360">
+        <Stroke color="[CONFIGURATION.accent.1]" thickness="4" />
+      </Arc>
+      <Arc centerX="225" centerY="225" width="436" height="436" startAngle="0" endAngle="0">
+        <Transform target="endAngle" value="[SECOND] * 6" />
+        <Stroke color="[CONFIGURATION.accent.0]" thickness="4" cap="ROUND" />
+      </Arc>
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+    </PartDraw>
+
+    <!-- Date, for example "Sat 17 Oct". The day number is larger and in the accent colour. -->
+    <PartText x="75" y="48" width="300" height="54">
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+      <Text align="CENTER">
+        <Font family="SYNC_TO_DEVICE" size="26" weight="MEDIUM" color="#FFE0E0E0"><Template>%s <Parameter expression="[DAY_OF_WEEK_S]" /></Template></Font>
+        <Font family="SYNC_TO_DEVICE" size="42" weight="BOLD" color="[CONFIGURATION.accent.0]"><Template>%d<Parameter expression="[DAY]" /></Template></Font>
+        <Font family="SYNC_TO_DEVICE" size="26" weight="MEDIUM" color="#FFE0E0E0"><Template> %s<Parameter expression="[MONTH_S]" /></Template></Font>
+      </Text>
+    </PartText>
+
+    <!-- Time. Follows the watch's 12/24 hour setting. -->
+    <DigitalClock x="0" y="100" width="450" height="124">
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="END" x="20" y="0" width="324" height="124">
+        <Variant mode="AMBIENT" target="alpha" value="0" />
+        <Font family="SYNC_TO_DEVICE" size="108" weight="MEDIUM" color="#FFFFFFFF" />
+      </TimeText>
+      <TimeText format="ss" align="START" x="350" y="56" width="80" height="56">
+        <Variant mode="AMBIENT" target="alpha" value="0" />
+        <Font family="SYNC_TO_DEVICE" size="44" weight="MEDIUM" color="[CONFIGURATION.accent.0]" />
+      </TimeText>
+    </DigitalClock>
+
+    <!-- Always-on (ambient) mode shows only this: HH:MM centred, white, thin weight to save power. -->
+    <DigitalClock x="0" y="163" width="450" height="124">
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="0" width="450" height="124" alpha="0">
+        <Variant mode="AMBIENT" target="alpha" value="255" />
+        <Font family="SYNC_TO_DEVICE" size="108" weight="LIGHT" color="#FFFFFFFF" />
+      </TimeText>
+    </DigitalClock>
+
+    <!-- Stats row: battery, steps, heart rate. Distance is a complication slot below. -->
+    <Group name="stats" x="0" y="232" width="450" height="60">
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+
+      <!-- Battery: number plus a battery icon that fills with charge. Both turn red when low. -->
+      <Condition>
+        <Expressions>
+          <Expression name="batteryLow"><![CDATA[[BATTERY_IS_LOW]]]></Expression>
+        </Expressions>
+        <Compare expression="batteryLow">
+          <PartText x="45" y="0" width="90" height="36">
+            <Text align="CENTER">
+              <Font family="SYNC_TO_DEVICE" size="30" weight="MEDIUM" color="#FFFF5252">
+                <Template>%s<Parameter expression="[BATTERY_PERCENT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <PartDraw x="70" y="38" width="40" height="18">
+            <RoundRectangle x="1" y="1" width="31" height="16" cornerRadiusX="3" cornerRadiusY="3">
+              <Stroke color="#FFFF5252" thickness="2" />
+            </RoundRectangle>
+            <Rectangle x="33" y="5" width="4" height="8">
+              <Fill color="#FFFF5252" />
+            </Rectangle>
+            <Rectangle x="4" y="4" width="25" height="10">
+              <Transform target="width" value="25 * clamp([BATTERY_PERCENT], 0, 100) / 100" />
+              <Fill color="#FFFF5252" />
+            </Rectangle>
+          </PartDraw>
+        </Compare>
+        <Default>
+          <PartText x="45" y="0" width="90" height="36">
+            <Text align="CENTER">
+              <Font family="SYNC_TO_DEVICE" size="30" weight="MEDIUM" color="#FFFFFFFF">
+                <Template>%s<Parameter expression="[BATTERY_PERCENT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <PartDraw x="70" y="38" width="40" height="18">
+            <RoundRectangle x="1" y="1" width="31" height="16" cornerRadiusX="3" cornerRadiusY="3">
+              <Stroke color="#FF69F0AE" thickness="2" />
+            </RoundRectangle>
+            <Rectangle x="33" y="5" width="4" height="8">
+              <Fill color="#FF69F0AE" />
+            </Rectangle>
+            <Rectangle x="4" y="4" width="25" height="10">
+              <Transform target="width" value="25 * clamp([BATTERY_PERCENT], 0, 100) / 100" />
+              <Fill color="#FF69F0AE" />
+            </Rectangle>
+          </PartDraw>
+        </Default>
+      </Condition>
+
+      <!-- Steps. -->
+      <PartText x="135" y="0" width="90" height="36">
+        <Text align="CENTER">
+          <Font family="SYNC_TO_DEVICE" size="30" weight="MEDIUM" color="#FFFFFFFF">
+            <Template>%s<Parameter expression="[STEP_COUNT]" /></Template>
+          </Font>
+        </Text>
+      </PartText>
+      <PartImage x="168" y="35" width="24" height="24" tintColor="#FF40C4FF">
+        <Image resource="ic_steps" />
+      </PartImage>
+
+      <!-- Heart rate: blank until the sensor has a reading. -->
+      <PartText x="225" y="0" width="90" height="36">
+        <Text align="CENTER">
+          <Font family="SYNC_TO_DEVICE" size="30" weight="MEDIUM" color="#FFFFFFFF">
+            <Template>%s<Parameter expression="[HEART_RATE_Z]" /></Template>
+          </Font>
+        </Text>
+      </PartText>
+      <PartImage x="258" y="35" width="24" height="24" tintColor="#FFFF5252">
+        <Image resource="ic_heart" />
+      </PartImage>
+    </Group>
+
+    <!-- Distance today. Defaults to the PixelFace companion provider. -->
+    <ComplicationSlot slotId="1" displayName="slot_distance" x="315" y="232" width="90" height="60"
+        supportedTypes="SHORT_TEXT EMPTY">
+      <DefaultProviderPolicy
+          primaryProvider="com.jimlin.pixelface.companion/com.jimlin.pixelface.companion.DistanceComplicationService"
+          primaryProviderType="SHORT_TEXT"
+          defaultSystemProvider="EMPTY"
+          defaultSystemProviderType="EMPTY" />
+      <BoundingBox x="0" y="0" width="90" height="60" />
+      <Complication type="SHORT_TEXT">
+        <PartText x="0" y="0" width="90" height="36">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="30" weight="MEDIUM" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="0" y="36" width="90" height="22">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#FFFFD740">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="EMPTY">
+        <PartText x="0" y="0" width="90" height="36">
+          <Text align="CENTER">
+            <Font family="SYNC_TO_DEVICE" size="30" color="#FF757575">--</Font>
+          </Text>
+        </PartText>
+        <PartText x="0" y="36" width="90" height="22">
+          <Text align="CENTER">
+            <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#FFFFD740">KM</Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+    </ComplicationSlot>
+
+    <!-- Now playing. Defaults to the PixelFace companion provider.
+         TEXT is the track title, TITLE is the artist. -->
+    <ComplicationSlot slotId="2" displayName="slot_now_playing" x="65" y="290" width="320" height="46"
+        supportedTypes="LONG_TEXT SHORT_TEXT EMPTY">
+      <DefaultProviderPolicy
+          primaryProvider="com.jimlin.pixelface.companion/com.jimlin.pixelface.companion.NowPlayingComplicationService"
+          primaryProviderType="LONG_TEXT"
+          defaultSystemProvider="EMPTY"
+          defaultSystemProviderType="EMPTY" />
+      <BoundingBox x="0" y="0" width="320" height="46" />
+      <Complication type="LONG_TEXT">
+        <PartText x="0" y="0" width="320" height="28">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="22" weight="MEDIUM" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="20" y="28" width="280" height="18">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="16" color="[CONFIGURATION.accent.0]">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="SHORT_TEXT">
+        <PartText x="0" y="8" width="320" height="32">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="22" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="EMPTY">
+        <PartText x="0" y="8" width="320" height="32">
+          <Text align="CENTER">
+            <Font family="SYNC_TO_DEVICE" size="18" color="#FF616161">Nothing playing</Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+    </ComplicationSlot>
+
+    <!-- Torch shortcut (left). Pick "App shortcut" then Flashlight when customizing. -->
+    <ComplicationSlot slotId="3" displayName="slot_torch" x="92" y="340" width="68" height="68"
+        supportedTypes="SMALL_IMAGE MONOCHROMATIC_IMAGE SHORT_TEXT EMPTY">
+      <DefaultProviderPolicy defaultSystemProvider="APP_SHORTCUT" defaultSystemProviderType="SMALL_IMAGE" />
+      <BoundingOval x="0" y="0" width="68" height="68" />
+      <Complication type="SMALL_IMAGE">
+        <PartDraw x="0" y="0" width="68" height="68">
+          <Ellipse x="0" y="0" width="68" height="68">
+            <Fill color="[CONFIGURATION.accent.1]" />
+          </Ellipse>
+        </PartDraw>
+        <PartImage x="12" y="12" width="44" height="44">
+          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartDraw x="0" y="0" width="68" height="68">
+          <Ellipse x="0" y="0" width="68" height="68">
+            <Fill color="[CONFIGURATION.accent.1]" />
+          </Ellipse>
+        </PartDraw>
+        <PartImage x="15" y="15" width="39" height="39" tintColor="[CONFIGURATION.accent.0]">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="SHORT_TEXT">
+        <PartDraw x="0" y="0" width="68" height="68">
+          <Ellipse x="0" y="0" width="68" height="68">
+            <Fill color="[CONFIGURATION.accent.1]" />
+          </Ellipse>
+        </PartDraw>
+        <PartText x="2" y="17" width="63" height="34">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="16" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="EMPTY">
+        <PartDraw x="0" y="0" width="68" height="68">
+          <Ellipse x="1" y="1" width="66" height="66">
+            <Stroke color="[CONFIGURATION.accent.1]" thickness="2" />
+          </Ellipse>
+          <Rectangle x="33" y="22" width="2" height="24">
+            <Fill color="#FF757575" />
+          </Rectangle>
+          <Rectangle x="22" y="33" width="24" height="2">
+            <Fill color="#FF757575" />
+          </Rectangle>
+        </PartDraw>
+      </Complication>
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+    </ComplicationSlot>
+
+    <!-- Media controls (centre). Opens the system media player / controls. -->
+    <Group name="mediaButton" x="191" y="352" width="68" height="68">
+      <Launch target="MUSIC_PLAYER" />
+      <PartDraw x="0" y="0" width="68" height="68">
+        <Ellipse x="0" y="0" width="68" height="68">
+          <Fill color="[CONFIGURATION.accent.1]" />
+        </Ellipse>
+        <!-- Music note drawn from shapes: two heads, two stems, a beam. -->
+        <Ellipse x="17" y="40" width="15" height="11">
+          <Fill color="[CONFIGURATION.accent.0]" />
+        </Ellipse>
+        <Ellipse x="36" y="36" width="15" height="11">
+          <Fill color="[CONFIGURATION.accent.0]" />
+        </Ellipse>
+        <Rectangle x="28" y="18" width="4" height="28">
+          <Fill color="[CONFIGURATION.accent.0]" />
+        </Rectangle>
+        <Rectangle x="47" y="15" width="4" height="28">
+          <Fill color="[CONFIGURATION.accent.0]" />
+        </Rectangle>
+        <Rectangle x="28" y="15" width="23" height="6">
+          <Fill color="[CONFIGURATION.accent.0]" />
+        </Rectangle>
+      </PartDraw>
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+    </Group>
+
+    <!-- Swim.com shortcut (right). Pick "App shortcut" then Swim.com when customizing. -->
+    <ComplicationSlot slotId="4" displayName="slot_swim" x="290" y="340" width="68" height="68"
+        supportedTypes="SMALL_IMAGE MONOCHROMATIC_IMAGE SHORT_TEXT EMPTY">
+      <DefaultProviderPolicy defaultSystemProvider="APP_SHORTCUT" defaultSystemProviderType="SMALL_IMAGE" />
+      <BoundingOval x="0" y="0" width="68" height="68" />
+      <Complication type="SMALL_IMAGE">
+        <PartDraw x="0" y="0" width="68" height="68">
+          <Ellipse x="0" y="0" width="68" height="68">
+            <Fill color="[CONFIGURATION.accent.1]" />
+          </Ellipse>
+        </PartDraw>
+        <PartImage x="12" y="12" width="44" height="44">
+          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartDraw x="0" y="0" width="68" height="68">
+          <Ellipse x="0" y="0" width="68" height="68">
+            <Fill color="[CONFIGURATION.accent.1]" />
+          </Ellipse>
+        </PartDraw>
+        <PartImage x="15" y="15" width="39" height="39" tintColor="[CONFIGURATION.accent.0]">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="SHORT_TEXT">
+        <PartDraw x="0" y="0" width="68" height="68">
+          <Ellipse x="0" y="0" width="68" height="68">
+            <Fill color="[CONFIGURATION.accent.1]" />
+          </Ellipse>
+        </PartDraw>
+        <PartText x="2" y="17" width="63" height="34">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="16" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="EMPTY">
+        <PartDraw x="0" y="0" width="68" height="68">
+          <Ellipse x="1" y="1" width="66" height="66">
+            <Stroke color="[CONFIGURATION.accent.1]" thickness="2" />
+          </Ellipse>
+          <Rectangle x="33" y="22" width="2" height="24">
+            <Fill color="#FF757575" />
+          </Rectangle>
+          <Rectangle x="22" y="33" width="24" height="2">
+            <Fill color="#FF757575" />
+          </Rectangle>
+        </PartDraw>
+      </Complication>
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+    </ComplicationSlot>
+
+  </Scene>
+</WatchFace>

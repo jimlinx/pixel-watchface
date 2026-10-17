@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PixelFace Data</string>
+    <string name="distance_label">Distance today</string>
+    <string name="now_playing_label">Now playing</string>
+    <string name="media_listener_label">PixelFace now playing</string>
+</resources>

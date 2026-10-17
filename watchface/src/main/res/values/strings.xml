@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">PixelFace</string>
+    <string name="slot_distance">Distance</string>
+    <string name="slot_now_playing">Now playing</string>
+    <string name="slot_torch">Torch shortcut</string>
+    <string name="slot_swim">Swim shortcut</string>
+    <string name="colors_label">Accent color</string>
+    <string name="color_cyan">Cyan</string>
+    <string name="color_lime">Lime</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_pink">Pink</string>
+    <string name="media_controls">Media controls</string>
+</resources>
